@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 800px; margin: auto; padding: 20px; }
+        button { margin: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Inventory Management</h1>
+        <div>
+            <h2>Add/Update Item</h2>
+            <input id="itemName" placeholder="Item Name" />
+            <input id="itemAmount" type="number" placeholder="Amount" />
+            <button onclick="addOrUpdateItem()">Add/Update Item</button>
+        </div>
+        <div>
+            <h2>Check Item Stock</h2>
+            <input id="checkItemName" placeholder="Item Name" />
+            <button onclick="checkStock()">Check Stock</button>
+            <div id="stockResult"></div>
+        </div>
+        <div>
+            <h2>Sell Item</h2>
+            <input id="sellItemName" placeholder="Item Name" />
+            <input id="sellItemAmount" type="number" placeholder="Amount" />
+            <input id="sellPrice" type="number" placeholder="Price" />
+            <button onclick="sellItem()">Sell Item</button>
+        </div>
+        <div>
+            <h2>Total Sales</h2>
+            <button onclick="getTotalSales()">Get Total Sales</button>
+            <div id="totalSalesResult"></div>
+        </div>
+        <div>
+            <h2>Delete All Items</h2>
+            <button onclick="deleteAllItems()">Delete All Items</button>
+        </div>
+    </div>
+
+    <script>
+        const apiBaseUrl = "http://<YOUR_IP_ADDRESS>:5000/v1/stocks";
+
+        function addOrUpdateItem() {
+            const name = $("#itemName").val();
+            const amount = $("#itemAmount").val();
+
+            $.ajax({
+                url: apiBaseUrl,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ name, amount }),
+                success: function (data) {
+                    alert("Item added/updated: " + JSON.stringify(data));
+                },
+                error: function (err) {
+                    alert("Error: " + JSON.stringify(err));
+                }
+            });
+        }
+
+        function checkStock() {
+            const name = $("#checkItemName").val();
+            $.ajax({
+                url: apiBaseUrl + '/' + name,
+                method: "GET",
+                success: function (data) {
+                    $("#stockResult").text("Stock: " + JSON.stringify(data));
+                },
+                error: function (err) {
+                    $("#stockResult").text("Error: " + JSON.stringify(err));
+                }
+            });
+        }
+
+        function sellItem() {
+            const name = $("#sellItemName").val();
+            const amount = $("#sellItemAmount").val();
+            const price = $("#sellPrice").val();
+
+            $.ajax({
+                url: "http://<YOUR_IP_ADDRESS>:5000/v1/sales",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ name, amount, price }),
+                success: function (data) {
+                    alert("Item sold: " + JSON.stringify(data));
+                },
+                error: function (err) {
+                    alert("Error: " + JSON.stringify(err));
+                }
+            });
+        }
+
+        function getTotalSales() {
+            $.ajax({
+                url: "http://<YOUR_IP_ADDRESS>:5000/v1/sales",
+                method: "GET",
+                success: function (data) {
+                    $("#totalSalesResult").text("Total Sales: " + JSON.stringify(data));
+                },
+                error: function (err) {
+                    $("#totalSalesResult").text("Error: " + JSON.stringify(err));
+                }
+            });
+        }
+
+        function deleteAllItems() {
+            $.ajax({
+                url: apiBaseUrl,
+                method: "DELETE",
+                success: function (data) {
+                    alert(data.message);
+                },
+                error: function (err) {
+                    alert("Error: " + JSON.stringify(err));
+                }
+            });
+        }
+    </script>
+</body>
+</html>
