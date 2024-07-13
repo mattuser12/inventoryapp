@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS inventory (
+    name TEXT PRIMARY KEY,
+    amount INTEGER NOT NULL DEFAULT 0,
+    sold REAL NOT NULL DEFAULT 0
+);
